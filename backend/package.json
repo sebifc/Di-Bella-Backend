@@ -5,7 +5,6 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "babel src -d dist",
     "backend": "nodemon server.js"
   },
   "keywords": [],
