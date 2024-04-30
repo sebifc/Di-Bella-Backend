@@ -35,12 +35,17 @@ const createOrder = asyncHandler(async (req, res) => {
 });
 
 const getOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find().sort("-updatedAt");
+  const orders = await Order.find()
+    .populate("product")
+    .populate("supplier")
+    .sort("-updatedAt");
   res.status(200).json(orders);
 });
 
 const getOrder = asyncHandler(async (req, res) => {
-  const order = await Order.findById(req.params.id);
+  const order = await Order.findById(req.params.id)
+    .populate("product")
+    .populate("supplier");
   if (!order) {
     res.status(404);
     throw new Error("Order not found");
