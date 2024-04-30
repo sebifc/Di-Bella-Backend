@@ -1,9 +1,8 @@
-const moment = require('moment');
+const moment = require("moment");
 const asyncHandler = require("express-async-handler");
 const Product = require("../models/productModel");
 const { fileSizeFormatter } = require("../utils/fileUpload");
 const cloudinary = require("cloudinary").v2;
-
 
 // Create Prouct
 const createProduct = asyncHandler(async (req, res) => {
@@ -68,7 +67,7 @@ const getProduct = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Product not found");
   }
- 
+
   res.status(200).json(product);
 });
 
@@ -89,20 +88,14 @@ const deleteProduct = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Product deleted." });
 });
 
-
-
-
 // Update Product
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, category, quantity, price, description   } = req.body;
+  const { name, category, quantity, price, description } = req.body;
   const { id } = req.params;
-  
-  
 
-  
+  console.log(req.body);
 
   const product = await Product.findById(id);
-  
 
   // if product doesn't exist
   if (!product) {
@@ -133,9 +126,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     };
   }
 
-  const updtAt = moment().format('YYYY-MM-DD HH:mm');
-
-
+  const updtAt = moment().format("YYYY-MM-DD HH:mm");
 
   // Update Product
   const updatedProduct = await Product.findByIdAndUpdate(
@@ -148,7 +139,6 @@ const updateProduct = asyncHandler(async (req, res) => {
       description,
       image: Object.keys(fileData).length === 0 ? product?.image : fileData,
       updatedAt: updtAt,
-      
     },
     {
       new: true,
