@@ -8,7 +8,7 @@ const sendEmail = require("../utils/sendEmail");
 
 // Generate Token
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "2d" });
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
 
 // Register User
