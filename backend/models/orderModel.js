@@ -17,21 +17,25 @@ const orderSchema = mongoose.Schema(
       required: [true, "Please add purchase date"],
       trim: true,
     },
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: [true, "Please add product."],
-      ref: "Product",
-    },
+    product: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        required: [true, "Please add product."],
+        ref: "Product",
+      },
+    ],
     brand: {
       type: String,
       required: [true, "Please add brand."],
       trim: true,
     },
-    supplier: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: [true, "Please add supplier."],
-      ref: "Supplier",
-    },
+    supplier: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        required: [true, "Please add supplier."],
+        ref: "Supplier",
+      },
+    ],
     batch: {
       type: String,
       required: [true, "Please add batch."],

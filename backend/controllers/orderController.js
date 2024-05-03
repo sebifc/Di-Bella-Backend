@@ -3,14 +3,17 @@ const asyncHandler = require("express-async-handler");
 const Order = require("../models/orderModel");
 
 const createOrder = asyncHandler(async (req, res) => {
-  const { date, product, brand, supplier, batch, expiration, invoiceNumber } =
+  let { date, product, brand, supplier, batch, expiration, invoiceNumber } =
     req.body;
+
+  supplier = JSON.parse(supplier);
+  product = JSON.parse(product);
 
   if (
     !date ||
-    !product ||
+    product.length === 0 ||
     !brand ||
-    !supplier ||
+    supplier.length === 0 ||
     !batch ||
     !expiration ||
     !invoiceNumber
@@ -70,9 +73,12 @@ const deleteOrder = asyncHandler(async (req, res) => {
 });
 
 const updateOrder = asyncHandler(async (req, res) => {
-  const { date, product, brand, supplier, batch, expiration, invoiceNumber } =
+  let { date, product, brand, supplier, batch, expiration, invoiceNumber } =
     req.body;
   const { id } = req.params;
+
+  supplier = JSON.parse(supplier);
+  product = JSON.parse(product);
 
   const order = await Order.findById(id);
 
