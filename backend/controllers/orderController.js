@@ -41,7 +41,7 @@ const getOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find()
     .populate("product")
     .populate("supplier")
-    .sort("-updatedAt");
+    .sort([["-updatedAt", -1]]);
   res.status(200).json(orders);
 });
 

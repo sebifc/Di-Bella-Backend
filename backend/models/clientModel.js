@@ -18,44 +18,60 @@ const clientSchema = mongoose.Schema(
     },
     businessName: {
       type: String,
-      required: [true, "Please add business name."],
+      // required: [true, "Please add business name."],
       trim: true,
     },
     cuit: {
       type: Number,
-      required: [true, "Please add a CUIT"],
+      // required: [true, "Please add a CUIT"],
       trim: true,
     },
     contact: {
       type: String,
-      required: [true, "Please add contact person"],
+      // required: [true, "Please add contact person"],
       trim: true,
     },
     address: {
       type: String,
-      required: [true, "Please add a address"],
+      // required: [true, "Please add a address"],
       trim: true,
     },
     email: {
       type: String,
-      required: [true, "Please add a email"],
+      // required: [true, "Please add a email"],
+      trim: true,
+    },
+    email2: {
+      type: String,
+      trim: true,
+    },
+    email3: {
+      type: String,
       trim: true,
     },
     location: {
       type: String,
-      required: [true, "Please add a location"],
+      // required: [true, "Please add a location"],
       trim: true,
     },
     phone: {
       type: Number,
-      required: [true, "Please add a phone"],
+      // required: [true, "Please add a phone"],
       trim: true,
     },
     type: {
       type: Number,
-      required: [true, "Please add type."],
+      // required: [true, "Please add type."],
       trim: true,
     },
+    originContact: {
+      type: Number,
+      trim: true,
+    },
+    paymentCondition: {
+      type: Number,
+      trim: true,
+    }
   },
   {
     timestamps: true,

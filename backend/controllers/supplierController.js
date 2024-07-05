@@ -18,17 +18,7 @@ const createSupplier = asyncHandler(async (req, res) => {
   } = req.body;
 
   // Validation
-  if (
-    !name ||
-    !phone ||
-    !cuit ||
-    !contact ||
-    !address ||
-    !email ||
-    !paymentMethod ||
-    !qualified ||
-    !code
-  ) {
+  if (!name) {
     res.status(400);
     throw new Error("Please fill in all fields");
   }
@@ -54,7 +44,7 @@ const createSupplier = asyncHandler(async (req, res) => {
 
 // Get all suppliers
 const getSuppliers = asyncHandler(async (req, res) => {
-  const suppliers = await Supplier.find().sort("-updatedAt");
+  const suppliers = await Supplier.find().sort([["-updatedAt", -1]]);
   res.status(200).json(suppliers);
 });
 
