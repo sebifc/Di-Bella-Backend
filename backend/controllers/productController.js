@@ -55,7 +55,7 @@ const createProduct = asyncHandler(async (req, res) => {
 
 // Get all Products
 const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find().sort("-updatedAt");
+  const products = await Product.find().sort([["-updatedAt", -1]]);
   res.status(200).json(products);
 });
 

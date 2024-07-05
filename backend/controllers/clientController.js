@@ -10,21 +10,16 @@ const createClient = asyncHandler(async (req, res) => {
     contact,
     address,
     email,
+    email2,
+    email3,
     location,
     phone,
     type,
+    originContact,
+    paymentCondition,
   } = req.body;
 
-  if (
-    !name ||
-    !phone ||
-    !cuit ||
-    !contact ||
-    !address ||
-    !email ||
-    !location ||
-    !businessName
-  ) {
+  if (!name) {
     res.status(400);
     throw new Error("Please fill in all fields");
   }
@@ -38,16 +33,20 @@ const createClient = asyncHandler(async (req, res) => {
     contact,
     address,
     email,
+    email2,
+    email3,
     location,
     phone,
     type,
+    originContact,
+    paymentCondition,
   });
 
   res.status(201).json(client);
 });
 
 const getClients = asyncHandler(async (req, res) => {
-  const clients = await Client.find().sort("-updatedAt");
+  const clients = await Client.find().sort([["-updatedAt", -1]]);
   res.status(200).json(clients);
 });
 
@@ -84,9 +83,13 @@ const updateClient = asyncHandler(async (req, res) => {
     contact,
     address,
     email,
+    email2,
+    email3,
     location,
     phone,
     type,
+    originContact,
+    paymentCondition,
   } = req.body;
   const { id } = req.params;
   console.log(req.body);
@@ -109,9 +112,13 @@ const updateClient = asyncHandler(async (req, res) => {
       contact,
       address,
       email,
+      email2,
+      email3,
       location,
       phone,
       type,
+      originContact,
+      paymentCondition,
       updatedAt: updtAt,
     },
     {
