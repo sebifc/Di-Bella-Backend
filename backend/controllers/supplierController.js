@@ -15,6 +15,7 @@ const createSupplier = asyncHandler(async (req, res) => {
     qualified,
     type,
     code,
+    description,
   } = req.body;
 
   // Validation
@@ -37,6 +38,7 @@ const createSupplier = asyncHandler(async (req, res) => {
     qualified,
     type,
     code,
+    description,
   });
 
   res.status(201).json(supplier);
@@ -90,9 +92,9 @@ const updateSupplier = asyncHandler(async (req, res) => {
     qualified,
     type,
     code,
+    description,
   } = req.body;
   const { id } = req.params;
-  console.log(req.body);
 
   const supplier = await Supplier.findById(id);
 
@@ -117,6 +119,7 @@ const updateSupplier = asyncHandler(async (req, res) => {
       qualified,
       type,
       code,
+      description,
       updatedAt: updtAt,
     },
     {
