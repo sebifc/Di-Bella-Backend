@@ -61,6 +61,10 @@ const supplierSchema = mongoose.Schema(
       /* required: [true, "Please add code."], */
       trim: true,
     },
+    description: {
+      type: String,
+      trim: true,
+    },
   },
   {
     timestamps: true,
