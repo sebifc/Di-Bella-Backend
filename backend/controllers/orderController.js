@@ -3,20 +3,37 @@ const asyncHandler = require("express-async-handler");
 const Order = require("../models/orderModel");
 
 const createOrder = asyncHandler(async (req, res) => {
-  let { date, product, brand, supplier, batch, expiration, invoiceNumber } =
-    req.body;
+  let {
+    sku,
+    minimumUnit,
+    brand,
+    ean13,
+    batch,
+    expiration,
+    supplier,
+    refer,
+    invoiceNumber,
+    itemPurchasePrice,
+    transport,
+    hygienic,
+  } = req.body;
 
   supplier = JSON.parse(supplier);
-  product = JSON.parse(product);
+  sku = JSON.parse(sku);
 
   if (
-    !date ||
-    product.length === 0 ||
+    sku.length === 0 ||
+    !minimumUnit ||
     !brand ||
-    supplier.length === 0 ||
+    !ean13 ||
     !batch ||
     !expiration ||
-    !invoiceNumber
+    supplier.length === 0 ||
+    !refer ||
+    !invoiceNumber ||
+    !itemPurchasePrice ||
+    (transport == null && transport === undefined) ||
+    !hygienic
   ) {
     res.status(400);
     throw new Error("Please fill in all fields");
@@ -25,13 +42,18 @@ const createOrder = asyncHandler(async (req, res) => {
   const order = await Order.create({
     user: req.user.id,
     user_name: req.user.name,
-    date: moment(date).format("YYYY-MM-DD HH:mm"),
-    product,
+    sku,
+    minimumUnit,
     brand,
-    supplier,
+    ean13,
     batch,
     expiration: moment(expiration).format("YYYY-MM-DD HH:mm"),
+    supplier,
+    refer,
     invoiceNumber,
+    itemPurchasePrice,
+    transport,
+    hygienic,
   });
 
   res.status(201).json(order);
@@ -39,7 +61,7 @@ const createOrder = asyncHandler(async (req, res) => {
 
 const getOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find()
-    .populate("product")
+    .populate("sku")
     .populate("supplier")
     .sort([["-updatedAt", -1]]);
   res.status(200).json(orders);
@@ -47,7 +69,7 @@ const getOrders = asyncHandler(async (req, res) => {
 
 const getOrder = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id)
-    .populate("product")
+    .populate("sku")
     .populate("supplier");
   if (!order) {
     res.status(404);
@@ -73,12 +95,24 @@ const deleteOrder = asyncHandler(async (req, res) => {
 });
 
 const updateOrder = asyncHandler(async (req, res) => {
-  let { date, product, brand, supplier, batch, expiration, invoiceNumber } =
-    req.body;
+  let {
+    sku,
+    minimumUnit,
+    brand,
+    ean13,
+    batch,
+    expiration,
+    supplier,
+    refer,
+    invoiceNumber,
+    itemPurchasePrice,
+    transport,
+    hygienic,
+  } = req.body;
   const { id } = req.params;
 
   supplier = JSON.parse(supplier);
-  product = JSON.parse(product);
+  sku = JSON.parse(sku);
 
   const order = await Order.findById(id);
 
@@ -92,13 +126,18 @@ const updateOrder = asyncHandler(async (req, res) => {
   const updatedOrder = await Order.findByIdAndUpdate(
     { _id: id },
     {
-      date: moment(date).format("YYYY-MM-DD HH:mm"),
-      product,
+      sku,
+      minimumUnit,
       brand,
-      supplier,
+      ean13,
       batch,
       expiration: moment(expiration).format("YYYY-MM-DD HH:mm"),
+      supplier,
+      refer,
       invoiceNumber,
+      itemPurchasePrice,
+      transport,
+      hygienic,
       updatedAt: updtAt,
     },
     {

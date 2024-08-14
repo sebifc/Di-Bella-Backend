@@ -17,6 +17,7 @@ const createClient = asyncHandler(async (req, res) => {
     type,
     originContact,
     paymentCondition,
+    observations,
   } = req.body;
 
   if (!name) {
@@ -40,6 +41,7 @@ const createClient = asyncHandler(async (req, res) => {
     type,
     originContact,
     paymentCondition,
+    observations,
   });
 
   res.status(201).json(client);
@@ -90,9 +92,9 @@ const updateClient = asyncHandler(async (req, res) => {
     type,
     originContact,
     paymentCondition,
+    observations,
   } = req.body;
   const { id } = req.params;
-  console.log(req.body);
 
   const client = await Client.findById(id);
 
@@ -119,6 +121,7 @@ const updateClient = asyncHandler(async (req, res) => {
       type,
       originContact,
       paymentCondition,
+      observations,
       updatedAt: updtAt,
     },
     {
