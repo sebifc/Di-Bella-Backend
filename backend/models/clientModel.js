@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const clientSchema = mongoose.Schema(
   {
@@ -18,27 +19,22 @@ const clientSchema = mongoose.Schema(
     },
     businessName: {
       type: String,
-      // required: [true, "Please add business name."],
       trim: true,
     },
     cuit: {
       type: Number,
-      // required: [true, "Please add a CUIT"],
       trim: true,
     },
     contact: {
       type: String,
-      // required: [true, "Please add contact person"],
       trim: true,
     },
     address: {
       type: String,
-      // required: [true, "Please add a address"],
       trim: true,
     },
     email: {
       type: String,
-      // required: [true, "Please add a email"],
       trim: true,
     },
     email2: {
@@ -51,17 +47,14 @@ const clientSchema = mongoose.Schema(
     },
     location: {
       type: String,
-      // required: [true, "Please add a location"],
       trim: true,
     },
     phone: {
       type: Number,
-      // required: [true, "Please add a phone"],
       trim: true,
     },
     type: {
       type: Number,
-      // required: [true, "Please add type."],
       trim: true,
     },
     originContact: {
@@ -71,12 +64,18 @@ const clientSchema = mongoose.Schema(
     paymentCondition: {
       type: Number,
       trim: true,
-    }
+    },
+    observations: {
+      type: String,
+      trim: true,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+clientSchema.plugin(AutoIncrement, { inc_field: 'clientId' });
 
 const Client = mongoose.model("Client", clientSchema);
 module.exports = Client;
