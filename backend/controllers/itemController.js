@@ -4,7 +4,7 @@ const Item = require("../models/itemModel");
 
 // Create Item
 const createItem = asyncHandler(async (req, res) => {
-  const { sku, category, minimumUnit } = req.body;
+  const { sku, category, presentation, description } = req.body;
 
   // Validation
   if (!sku) {
@@ -18,7 +18,8 @@ const createItem = asyncHandler(async (req, res) => {
     user_name: req.user.name,
     sku,
     category,
-    minimumUnit,
+    description,
+    presentation,
   });
 
   res.status(201).json(supplier);
@@ -61,7 +62,7 @@ const deleteItem = asyncHandler(async (req, res) => {
 
 // Update supplier
 const updateItem = asyncHandler(async (req, res) => {
-  const { sku, category, minimumUnit } = req.body;
+  const { sku, category, description, presentation } = req.body;
   const { id } = req.params;
 
   const supplier = await Item.findById(id);
@@ -79,7 +80,8 @@ const updateItem = asyncHandler(async (req, res) => {
     {
       sku,
       category,
-      minimumUnit,
+      description,
+      presentation,
       updatedAt: updtAt,
     },
     {
