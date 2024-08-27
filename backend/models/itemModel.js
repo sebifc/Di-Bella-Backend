@@ -23,9 +23,14 @@ const itemSchema = mongoose.Schema(
       required: [true, "Please add a category"],
       trim: true,
     },
-    minimumUnit: {
+    description: {
       type: String,
-      required: [true, "Please add a minimum unit"],
+      required: [true, "Please add a description"],
+      trim: true,
+    },
+    presentation: {
+      type: String,
+      required: [true, "Please add a presentation"],
       trim: true,
     },
   },
