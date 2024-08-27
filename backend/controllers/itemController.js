@@ -27,7 +27,7 @@ const createItem = asyncHandler(async (req, res) => {
 
 // Get all suppliers
 const getItems = asyncHandler(async (req, res) => {
-  const suppliers = await Item.find().sort([["-updatedAt", -1]]);
+  const suppliers = await Item.find().sort("sku");
   res.status(200).json(suppliers);
 });
 
