@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const protect = require("../middleWare/authMiddleware");
 const {
   createClient,
   getClient,
@@ -10,10 +9,10 @@ const {
 } = require("../controllers/clientController");
 const { upload } = require("../utils/fileUpload");
 
-router.post("/", protect, upload.single("image"), createClient);
+router.post("/", upload.single("image"), createClient);
 router.patch("/:id", upload.single("image"), updateClient);
 router.get("/", getClients);
-router.get("/:id", protect, getClient);
-router.delete("/:id", protect, deleteClient);
+router.get("/:id", getClient);
+router.delete("/:id", deleteClient);
 
 module.exports = router;
