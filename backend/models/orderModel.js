@@ -2,62 +2,6 @@ const mongoose = require("mongoose");
 const moment = require("moment");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 
-/* const orderSchema = mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "User",
-    },
-    user_name: {
-      type: String,
-      required: true,
-    },
-    date: {
-      type: mongoose.Schema.Types.Date,
-      required: [true, "Please add purchase date"],
-      trim: true,
-    },
-    product: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        required: [true, "Please add product."],
-        ref: "Product",
-      },
-    ],
-    brand: {
-      type: String,
-      required: [true, "Please add brand."],
-      trim: true,
-    },
-    supplier: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        required: [true, "Please add supplier."],
-        ref: "Supplier",
-      },
-    ],
-    batch: {
-      type: String,
-      required: [true, "Please add batch."],
-      trim: true,
-    },
-    expiration: {
-      type: mongoose.Schema.Types.Date,
-      required: [true, "Please add expiration."],
-      trim: true,
-    },
-    invoiceNumber: {
-      type: Number,
-      required: [true, "Please add invoice number."],
-      trim: true,
-    },
-  },
-  {
-    timestamps: true,
-  }
-); */
-
 const orderSchema = mongoose.Schema(
   {
     user: {
@@ -83,54 +27,54 @@ const orderSchema = mongoose.Schema(
     },
     brand: {
       type: String,
-      required: [true, "Please add brand."],
+      // required: [true, "Please add brand."],
       trim: true,
     },
     ean13: {
       type: Number,
-      required: [true, "Please add ean13."],
+      // required: [true, "Please add ean13."],
       trim: true,
     },
     batch: {
       type: String,
-      required: [true, "Please add batch."],
+      // required: [true, "Please add batch."],
       trim: true,
     },
     expiration: {
       type: mongoose.Schema.Types.Date,
-      required: [true, "Please add expiration."],
+      // required: [true, "Please add expiration."],
       trim: true,
     },
     supplier: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        required: [true, "Please add supplier."],
+        // required: [true, "Please add supplier."],
         ref: "Supplier",
       },
     ],
     refer: {
       type: String,
-      required: [true, "Please add refer."],
+      // required: [true, "Please add refer."],
       trim: true,
     },
     invoiceNumber: {
       type: Number,
-      required: [true, "Please add invoice number."],
+      // required: [true, "Please add invoice number."],
       trim: true,
     },
     itemPurchasePrice: {
       type: Number,
-      required: [true, "Please add item purchase price."],
+      // required: [true, "Please add item purchase price."],
       trim: true,
     },
     transport: {
       type: Number,
-      required: [true, "Please add transport."],
+      // required: [true, "Please add transport."],
       trim: true,
     },
     hygienic: {
       type: String,
-      required: [true, "Please add refer."],
+      // required: [true, "Please add refer."],
       trim: true,
     },
   },
