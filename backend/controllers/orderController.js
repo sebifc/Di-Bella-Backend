@@ -23,17 +23,7 @@ const createOrder = asyncHandler(async (req, res) => {
 
   if (
     sku.length === 0 ||
-    !minimumUnit ||
-    !brand ||
-    !ean13 ||
-    !batch ||
-    !expiration ||
-    supplier.length === 0 ||
-    !refer ||
-    !invoiceNumber ||
-    !itemPurchasePrice ||
-    (transport == null && transport === undefined) ||
-    !hygienic
+    !minimumUnit
   ) {
     res.status(400);
     throw new Error("Please fill in all fields");
@@ -47,7 +37,7 @@ const createOrder = asyncHandler(async (req, res) => {
     brand,
     ean13,
     batch,
-    expiration: moment(expiration).format("YYYY-MM-DD HH:mm"),
+    expiration: moment(expiration).isValid() ? moment(expiration).format("YYYY-MM-DD HH:mm") : null,
     supplier,
     refer,
     invoiceNumber,
