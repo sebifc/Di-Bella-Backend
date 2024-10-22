@@ -15,66 +15,58 @@ const orderSchema = mongoose.Schema(
     },
     sku: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        required: [true, "Please add item."],
-        ref: "Item",
+        item: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: [true, "Please add item."],
+          ref: "Item",
+        },
+        minimumUnit: {
+          type: Number,
+          required: [true, "Please add minimum unit."],
+          trim: true,
+        },
+        brand: {
+          type: String,
+          trim: true,
+        },
+        ean13: {
+          type: Number,
+          trim: true,
+        },
+        batch: {
+          type: String,
+          trim: true,
+        },
+        expiration: {
+          type: mongoose.Schema.Types.Date,
+          trim: true,
+        },
+        itemPurchasePrice: {
+          type: Number,
+          trim: true,
+        },
       },
     ],
-    minimumUnit: {
-      type: String,
-      required: [true, "Please add minimum unit."],
-      trim: true,
-    },
-    brand: {
-      type: String,
-      // required: [true, "Please add brand."],
-      trim: true,
-    },
-    ean13: {
-      type: Number,
-      // required: [true, "Please add ean13."],
-      trim: true,
-    },
-    batch: {
-      type: String,
-      // required: [true, "Please add batch."],
-      trim: true,
-    },
-    expiration: {
-      type: mongoose.Schema.Types.Date,
-      // required: [true, "Please add expiration."],
-      trim: true,
-    },
     supplier: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        // required: [true, "Please add supplier."],
         ref: "Supplier",
       },
     ],
     refer: {
       type: String,
-      // required: [true, "Please add refer."],
       trim: true,
     },
     invoiceNumber: {
       type: Number,
-      // required: [true, "Please add invoice number."],
-      trim: true,
-    },
-    itemPurchasePrice: {
-      type: Number,
-      // required: [true, "Please add item purchase price."],
       trim: true,
     },
     transport: {
       type: Number,
-      // required: [true, "Please add transport."],
       trim: true,
     },
     hygienic: {
       type: String,
-      // required: [true, "Please add refer."],
       trim: true,
     },
   },
@@ -83,16 +75,17 @@ const orderSchema = mongoose.Schema(
   }
 );
 
-orderSchema.pre("save", (next) => {
-  /* if (this.date) {
-    this.date = convertToDate(this.date);
-  } */
-  if (this.expiration) {
-    this.expiration = convertToDate(this.expiration);
-  }
+// Pre-save hook para convertir la fecha de expiración
+orderSchema.pre("save", function (next) {
+  this.sku.forEach((item) => {
+    if (item.expiration) {
+      item.expiration = convertToDate(item.expiration);
+    }
+  });
   next();
 });
 
+// Función para convertir la fecha al formato adecuado
 const convertToDate = (dateString) => {
   return moment(dateString, "DD/MM/YYYY").toDate();
 };

@@ -4,44 +4,46 @@ const Order = require("../models/orderModel");
 
 const createOrder = asyncHandler(async (req, res) => {
   let {
-    sku,
-    minimumUnit,
-    brand,
-    ean13,
-    batch,
-    expiration,
+    sku, // Array de objetos que contiene la información de cada SKU
     supplier,
     refer,
     invoiceNumber,
-    itemPurchasePrice,
     transport,
     hygienic,
   } = req.body;
 
-  supplier = JSON.parse(supplier);
-  sku = JSON.parse(sku);
+  // Parseamos supplier y sku si vienen como strings JSON
+  supplier = typeof supplier === "string" ? JSON.parse(supplier) : supplier;
+  sku = typeof sku === "string" ? JSON.parse(sku) : sku;
 
-  if (
-    sku.length === 0 ||
-    !minimumUnit
-  ) {
+  // Verificamos que sku no esté vacío y que al menos un SKU tenga los campos obligatorios
+  if (!sku || sku.length === 0 || !sku.every((item) => item.minimumUnit)) {
     res.status(400);
-    throw new Error("Please fill in all fields");
+    throw new Error("Please fill in all fields for each SKU");
   }
 
+  // Mapeamos cada SKU para manejar la conversión de expiration
+  const processedSku = sku.map((item) => ({
+    item: item.item, // ID del SKU
+    minimumUnit: item.minimumUnit,
+    brand: item.brand,
+    ean13: item.ean13,
+    batch: item.batch,
+    expiration:
+      item.expiration && moment(item.expiration, "DD/MM/YYYY").isValid()
+        ? moment(item.expiration, "DD/MM/YYYY").format("YYYY-MM-DD")
+        : null,
+    itemPurchasePrice: item.itemPurchasePrice,
+  }));
+
+  // Creamos la nueva orden
   const order = await Order.create({
     user: req.user.id,
     user_name: req.user.name,
-    sku,
-    minimumUnit,
-    brand,
-    ean13,
-    batch,
-    expiration: moment(expiration).isValid() ? moment(expiration).format("YYYY-MM-DD HH:mm") : null,
+    sku: processedSku, // Guardamos el array de SKU con sus detalles
     supplier,
     refer,
     invoiceNumber,
-    itemPurchasePrice,
     transport,
     hygienic,
   });
@@ -51,9 +53,13 @@ const createOrder = asyncHandler(async (req, res) => {
 
 const getOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find()
-    .populate("sku")
+    .populate({
+      path: "sku.item",
+      model: "Item",
+    })
     .populate("supplier")
-    .sort([["-updatedAt", -1]]);
+    .sort([["updatedAt", -1]]);
+
   res.status(200).json(orders);
 });
 
