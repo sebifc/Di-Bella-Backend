@@ -29,10 +29,9 @@ const createOrder = asyncHandler(async (req, res) => {
     brand: item.brand,
     ean13: item.ean13,
     batch: item.batch,
-    expiration:
-      item.expiration && moment(item.expiration, "DD/MM/YYYY").isValid()
-        ? moment(item.expiration, "DD/MM/YYYY").format("YYYY-MM-DD")
-        : null,
+    expiration: moment(item.expiration).isValid()
+      ? moment(item.expiration).format("YYYY-MM-DD HH:mm")
+      : null,
     itemPurchasePrice: item.itemPurchasePrice,
   }));
 
@@ -65,8 +64,12 @@ const getOrders = asyncHandler(async (req, res) => {
 
 const getOrder = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id)
-    .populate("sku")
+    .populate({
+      path: "sku.item",
+      model: "Item",
+    })
     .populate("supplier");
+
   if (!order) {
     res.status(404);
     throw new Error("Order not found");
