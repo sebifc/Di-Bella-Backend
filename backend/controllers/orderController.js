@@ -1,6 +1,7 @@
 const moment = require("moment");
 const asyncHandler = require("express-async-handler");
 const Order = require("../models/orderModel");
+const Stock = require("../models/stockModel");
 
 const createOrder = asyncHandler(async (req, res) => {
   let {
@@ -47,6 +48,10 @@ const createOrder = asyncHandler(async (req, res) => {
     hygienic,
   });
 
+  for (const item of processedSku) {
+    await updateStock(item.item, order._id, item.minimumUnit);
+  }
+
   res.status(201).json(order);
 });
 
@@ -89,29 +94,22 @@ const deleteOrder = asyncHandler(async (req, res) => {
     res.status(401);
     throw new Error("User not authorized");
   }
+
+  // Dejo el stock como estaba antes de crear la orden
+  for (const itemInStock of order.sku) {
+    await updateStock(itemInStock.item, order._id, -itemInStock.minimumUnit);
+  }
+
   await order.remove();
   res.status(200).json({ message: "Order deleted." });
 });
 
 const updateOrder = asyncHandler(async (req, res) => {
-  let {
-    sku,
-    minimumUnit,
-    brand,
-    ean13,
-    batch,
-    expiration,
-    supplier,
-    refer,
-    invoiceNumber,
-    itemPurchasePrice,
-    transport,
-    hygienic,
-  } = req.body;
+  let { sku, supplier, refer, invoiceNumber, transport, hygienic } = req.body;
   const { id } = req.params;
 
-  supplier = JSON.parse(supplier);
-  sku = JSON.parse(sku);
+  supplier = typeof supplier === "string" ? JSON.parse(supplier) : supplier;
+  sku = typeof sku === "string" ? JSON.parse(sku) : sku;
 
   const order = await Order.findById(id);
 
@@ -120,21 +118,20 @@ const updateOrder = asyncHandler(async (req, res) => {
     throw new Error("Order not found");
   }
 
+  // Dejo el stock como estaba antes de crear la orden
+  for (const itemInStock of order.sku) {
+    await updateStock(itemInStock.item, order._id, -itemInStock.minimumUnit);
+  }
+
   const updtAt = moment().format("YYYY-MM-DD HH:mm");
 
   const updatedOrder = await Order.findByIdAndUpdate(
     { _id: id },
     {
       sku,
-      minimumUnit,
-      brand,
-      ean13,
-      batch,
-      expiration: moment(expiration).format("YYYY-MM-DD HH:mm"),
       supplier,
       refer,
       invoiceNumber,
-      itemPurchasePrice,
       transport,
       hygienic,
       updatedAt: updtAt,
@@ -145,8 +142,32 @@ const updateOrder = asyncHandler(async (req, res) => {
     }
   );
 
+  // Actualizar el stock de cada SKU una vez que la orden ha sido creada
+  for (const item of sku) {
+    // Aquí `item.item` es el ID del SKU y `item.minimumUnit` es la cantidad que estamos comprando
+    await updateStock(item.item, order._id, item.minimumUnit);
+  }
+
   res.status(200).json(updatedOrder);
 });
+
+// Función para actualizar el stock
+const updateStock = async (itemId, orderId, quantityChange) => {
+  quantityChange = parseInt(quantityChange);
+  const stockRecord = await Stock.findOne({ sku: itemId, order: orderId });
+
+  if (stockRecord) {
+    stockRecord.quantity += quantityChange;
+    await stockRecord.save();
+  } else if (quantityChange > 0) {
+    // Solo crea un registro nuevo si la cantidad es positiva
+    await Stock.create({
+      sku: itemId,
+      order: orderId,
+      quantity: quantityChange,
+    });
+  }
+};
 
 module.exports = {
   createOrder,
