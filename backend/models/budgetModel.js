@@ -2,11 +2,18 @@ const mongoose = require("mongoose");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const ProspectStatus = Object.freeze({
-  BORRADOR: "Borrador",
-  PENDIENTE: "Pendiente",
-  RECHAZADO: "Rechazado",
-  APROBADO: "Aprobado",
-  APROBADO_MODIFICACIONES: "Aprobado con Modificaciones",
+  "Borrador": 0,
+  "Rechazado": 1,
+  "Aprobado": 2,
+  "Aprobado con Modificaciones": 3,
+});
+
+const PaymentMethods = Object.freeze({
+  "Efectivo contra entrega": 0,
+  "Transferencia contraentrega": 1,
+  "Transferencia a 30 dias": 2,
+  "Cheque a 30 dias": 3,
+  "Cheque a 60 dias": 4,
 });
 
 const budgetModel = mongoose.Schema(
@@ -40,33 +47,21 @@ const budgetModel = mongoose.Schema(
           type: Number, // Precio de compra (desde el modelo Order)
           required: true,
         },
-        batch: {
-          type: String, // Lote (desde el modelo Order)
-          required: true,
-        },
-        expiration: {
-          type: Date, // Fecha de vencimiento (desde el modelo Order)
-          required: true,
-        },
         quantity: {
           type: Number, // Cantidad de SKU
-          required: true,
-        },
-        saleValue: {
-          type: Number, // Valor de la venta por item y cantidad
           required: true,
         },
       },
     ],
     prospectStatus: {
-      type: String,
+      type: Number,
       enum: Object.values(ProspectStatus),
-      default: ProspectStatus.PENDIENTE,
+      default: ProspectStatus["Borrador"],
       required: true,
     },
     paymentMethod: {
-      type: String,
-      enum: ["Efectivo", "Transferencia", "Diferido"],
+      type: Number,
+      enum: Object.values(PaymentMethods),
       required: true,
     },
   },
