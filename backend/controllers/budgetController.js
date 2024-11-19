@@ -3,7 +3,7 @@ const asyncHandler = require("express-async-handler");
 const Budget = require("../models/budgetModel");
 
 const createBudget = asyncHandler(async (req, res) => {
-  const { client, paymentMethod, items } = req.body;
+  const { client, status, paymentMethod, items } = req.body;
 
   if (!client) {
     res.status(400);
@@ -14,9 +14,10 @@ const createBudget = asyncHandler(async (req, res) => {
     user: req.user.id,
     user_name: req.user.name,
     client,
-    paymentMethod,
-    items,
     budgetDate: moment().format("YYYY-MM-DD"),
+    items,
+    prospectStatus: status,
+    paymentMethod,
   });
 
   res.status(201).json(budget);
@@ -30,7 +31,12 @@ const getBudgets = asyncHandler(async (req, res) => {
 });
 
 const getBudget = asyncHandler(async (req, res) => {
-  const budget = await Budget.findById(req.params.id);
+  const budget = await Budget.findById(req.params.id)
+    .populate("client")
+    .populate({
+      path: "items.sku",
+      model: "Item",
+    });
   if (!budget) {
     res.status(404);
     throw new Error("Budget not found");
