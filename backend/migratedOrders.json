@@ -1,0 +1,65 @@
+[
+  {
+    "_id": "66ba68e0b95fe1e3bea87d11",
+    "user": "662830c7b4b2eb7c173dbe9d",
+    "user_name": "test test",
+    "sku": [
+      {
+        "item": "66ba50a92f1011c1c27d2d19",
+        "minimumUnit": "1234",
+        "brand": "brand",
+        "ean13": 1234567891234,
+        "batch": "123",
+        "expiration": "2030-04-26T03:00:00.000Z",
+        "itemPurchasePrice": 150
+      },
+      {
+        "item": "66ba641e2dc35094205994da",
+        "minimumUnit": "1234",
+        "brand": "brand",
+        "ean13": 1234567891234,
+        "batch": "123",
+        "expiration": "2030-04-26T03:00:00.000Z",
+        "itemPurchasePrice": 150
+      }
+    ],
+    "createdAt": "2024-08-12T19:56:16.564Z",
+    "updatedAt": "2024-09-13T11:16:20.008Z"
+  },
+  {
+    "_id": "66ba73c031a173aecf5f8f1e",
+    "user": "662830c7b4b2eb7c173dbe9d",
+    "user_name": "test test",
+    "sku": [
+      {
+        "item": "66ba641e2dc35094205994da",
+        "minimumUnit": "Caja x1000",
+        "brand": "marca 2",
+        "ean13": 1111111111111,
+        "batch": "1234",
+        "expiration": "2024-08-30T03:00:00.000Z",
+        "itemPurchasePrice": 555
+      }
+    ],
+    "createdAt": "2024-08-12T20:42:40.249Z",
+    "updatedAt": "2024-08-12T20:48:35.734Z"
+  },
+  {
+    "_id": "66e42186c186d4cd73f49332",
+    "user": "662830c7b4b2eb7c173dbe9d",
+    "user_name": "test test",
+    "sku": [
+      {
+        "item": "66cdcbe834ec78f322cbb09b",
+        "minimumUnit": "10231",
+        "brand": "",
+        "ean13": 0,
+        "batch": "",
+        "expiration": null,
+        "itemPurchasePrice": 0
+      }
+    ],
+    "createdAt": "2024-09-13T11:27:02.613Z",
+    "updatedAt": "2024-09-13T11:27:02.613Z"
+  }
+]
