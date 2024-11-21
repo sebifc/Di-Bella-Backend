@@ -26,7 +26,7 @@ async function checkStockAvailability(req, res) {
 }
 
 async function reserveStock(req, res) {
-  const { items } = req.body; // Lista de items a reservar con SKU y cantidad requerida
+  const { budgetId, items } = req.body; // Lista de items a reservar con SKU y cantidad requerida
 
   try {
     // Verificar disponibilidad para cada item en el presupuesto
@@ -44,7 +44,7 @@ async function reserveStock(req, res) {
     }
 
     // Si hay suficiente stock, intentar reservarlo
-    const result = await reserveStockForBudget(items);
+    const result = await reserveStockForBudget(budgetId, items);
     if (result.success) {
       res.status(200).json({ message: "Stock reservado exitosamente" });
     } else {
@@ -99,6 +99,7 @@ async function getInfoAndPrice(req, res) {
           purchasePrice: "$orderDetails.sku.itemPurchasePrice", // Precio de compra del SKU
           availableStock: 1,
           expiration: "$orderDetails.sku.expiration", // Fecha de expiración
+          batch: "$orderDetails.sku.batch",
         },
       },
       { $limit: 1 }, // Solo la entrada más cercana

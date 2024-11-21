@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Stock = require("../models/stockModel");
+const Budget = require("../models/budgetModel");
 
 async function checkTotalAvailableStock(sku, requiredQuantity) {
   const totalAvailable = await Stock.aggregate([
@@ -16,8 +17,14 @@ async function checkTotalAvailableStock(sku, requiredQuantity) {
   return availableStock >= requiredQuantity;
 }
 
-async function reserveStockForBudget(budgetItems) {
+async function reserveStockForBudget(budgetId, budgetItems) {
   try {
+    if (!budgetId || !budgetItems || !Array.isArray(budgetItems)) {
+      throw new Error("El ID del presupuesto y los items son requeridos.");
+    }
+
+    const modifiedStocks = [];
+
     for (const budgetItem of budgetItems) {
       const { sku, quantity } = budgetItem;
       const hasEnoughStock = await checkTotalAvailableStock(sku, quantity);
@@ -67,12 +74,29 @@ async function reserveStockForBudget(budgetItems) {
         remainingQuantity -= quantityToBlock;
 
         await stock.save();
+
+        // Guardar la información de la reserva
+        modifiedStocks.push({
+          stockId: stock._id,
+          reservedQuantity: quantityToBlock,
+        });
+
         if (remainingQuantity <= 0) break;
       }
 
       if (remainingQuantity > 0)
         throw new Error(`Stock insuficiente para el SKU ${sku}`);
     }
+
+    // Asociar las reservas al presupuesto
+    const budget = await Budget.findById(budgetId);
+    if (!budget) {
+      throw new Error("Presupuesto no encontrado.");
+    }
+
+    budget.stockReservations = budget.stockReservations || [];
+    budget.stockReservations.push(...modifiedStocks);
+    await budget.save();
 
     return {
       success: true,
