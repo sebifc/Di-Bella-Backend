@@ -1,6 +1,14 @@
 const moment = require("moment");
 const asyncHandler = require("express-async-handler");
 const Budget = require("../models/budgetModel");
+const Stock = require("../models/stockModel");
+
+const ProspectStatus = Object.freeze({
+  Borrador: 0,
+  Rechazado: 1,
+  Aprobado: 2,
+  AprobadoModificaciones: 3,
+});
 
 const createBudget = asyncHandler(async (req, res) => {
   const { client, status, paymentMethod, items } = req.body;
@@ -39,25 +47,61 @@ const getBudget = asyncHandler(async (req, res) => {
     });
   if (!budget) {
     res.status(404);
-    throw new Error("Budget not found");
+    throw new Error("El presupuesto no fue encontrado");
   }
 
   res.status(200).json(budget);
 });
 
 const deleteBudget = asyncHandler(async (req, res) => {
-  const budget = await Budget.findById(req.params.id);
-  if (!budget) {
-    res.status(404);
-    throw new Error("Budget not found");
+  try {
+    const budget = await Budget.findById(req.params.id);
+    if (!budget) {
+      res.status(404);
+      throw new Error("El presupuesto no fue encontrado");
+    }
+    // Match budget to its user
+    if (budget.user.toString() !== req.user.id) {
+      res.status(401);
+      throw new Error("User not authorized");
+    }
+
+    if (![ProspectStatus.Borrador].includes(budget.prospectStatus)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Solo se pueden eliminar presupuestos en estado Pendiente o Borrador",
+      });
+    }
+
+    // Desbloquea el stock reservado
+    const stockReservations = budget.stockReservations || [];
+
+    for (const reservation of stockReservations) {
+      const { stockId, reservedQuantity } = reservation;
+
+      const stock = await Stock.findById(stockId);
+
+      if (stock) {
+        stock.blocked -= reservedQuantity;
+        if (stock.blocked < 0) stock.blocked = 0; // Evita valores negativos
+        await stock.save();
+      }
+    }
+
+    // Elimina el presupuesto
+    await Budget.findByIdAndDelete(req.params.id);
+
+    res
+      .status(200)
+      .json({ message: "Presupuesto eliminado y stock desbloqueado" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Ocurrió un error al intentar eliminar el presupuesto",
+    });
   }
-  // Match budget to its user
-  if (budget.user.toString() !== req.user.id) {
-    res.status(401);
-    throw new Error("User not authorized");
-  }
-  await budget.remove();
-  res.status(200).json({ message: "Budget deleted." });
 });
 
 const updateBudget = asyncHandler(async (req, res) => {
@@ -68,7 +112,7 @@ const updateBudget = asyncHandler(async (req, res) => {
 
   if (!budget) {
     res.status(404);
-    throw new Error("Budget not found");
+    throw new Error("El presupuesto no fue encontrado");
   }
 
   const updtAt = moment().format("YYYY-MM-DD HH:mm");

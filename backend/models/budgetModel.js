@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const ProspectStatus = Object.freeze({
-  "Borrador": 0,
-  "Rechazado": 1,
-  "Aprobado": 2,
+  Borrador: 0,
+  Rechazado: 1,
+  Aprobado: 2,
   "Aprobado con Modificaciones": 3,
 });
 
@@ -47,8 +47,16 @@ const budgetModel = mongoose.Schema(
           type: Number, // Precio de compra (desde el modelo Order)
           required: true,
         },
+        itemSalePrice: {
+          type: Number, // Precio de venta
+          required: true,
+        },
         quantity: {
           type: Number, // Cantidad de SKU
+          required: true,
+        },
+        expiration: {
+          type: Date,
           required: true,
         },
       },
@@ -64,6 +72,19 @@ const budgetModel = mongoose.Schema(
       enum: Object.values(PaymentMethods),
       required: true,
     },
+    stockReservations: [
+      {
+        stockId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Stock",
+          required: true,
+        },
+        reservedQuantity: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
