@@ -11,7 +11,7 @@ const ProspectStatus = Object.freeze({
 });
 
 const createBudget = asyncHandler(async (req, res) => {
-  const { client, status, paymentMethod, items } = req.body;
+  const { client, status, paymentMethod, seller, items } = req.body;
 
   if (!client) {
     res.status(400);
@@ -26,6 +26,7 @@ const createBudget = asyncHandler(async (req, res) => {
     items,
     prospectStatus: status,
     paymentMethod,
+    seller,
   });
 
   res.status(201).json(budget);

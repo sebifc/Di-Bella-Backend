@@ -2,7 +2,11 @@ const mongoose = require("mongoose");
 const Stock = require("../models/stockModel");
 const Budget = require("../models/budgetModel");
 
-async function checkTotalAvailableStock(sku, requiredQuantity) {
+async function checkTotalAvailableStock(
+  sku,
+  requiredQuantity,
+  returnAvailable = false
+) {
   const totalAvailable = await Stock.aggregate([
     { $match: { sku: mongoose.Types.ObjectId(sku) } },
     {
@@ -14,7 +18,11 @@ async function checkTotalAvailableStock(sku, requiredQuantity) {
   ]);
 
   const availableStock = totalAvailable[0]?.totalAvailable || 0;
-  return availableStock >= requiredQuantity;
+  const isAvailable = availableStock >= requiredQuantity;
+
+  if (returnAvailable) return { isAvailable, availableStock };
+
+  return isAvailable;
 }
 
 async function reserveStockForBudget(budgetId, budgetItems) {
@@ -107,4 +115,22 @@ async function reserveStockForBudget(budgetId, budgetItems) {
   }
 }
 
-module.exports = { checkTotalAvailableStock, reserveStockForBudget };
+async function getDraftBudgetsBySku(skuId) {
+  try {
+    const budgetIds = await Budget.distinct("budgetId", {
+      prospectStatus: 0, // Solo presupuestos en estado "Borrador"
+      "items.sku": skuId, // Busca el SKU en los items del presupuesto
+    });
+
+    return budgetIds;
+  } catch (error) {
+    console.error("Error fetching draft budget IDs:", error);
+    throw error;
+  }
+}
+
+module.exports = {
+  checkTotalAvailableStock,
+  reserveStockForBudget,
+  getDraftBudgetsBySku,
+};

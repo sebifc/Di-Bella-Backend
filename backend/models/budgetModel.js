@@ -16,6 +16,13 @@ const PaymentMethods = Object.freeze({
   "Cheque a 60 dias": 4,
 });
 
+const Sellers = Object.freeze({
+  "DIANA COCH": 0,
+  "FERNANDO PAZZANO": 1,
+  "LUCILA DI BELLA": 2,
+  "VENDEDOR EXTERNO": 3,
+});
+
 const budgetModel = mongoose.Schema(
   {
     user: {
@@ -59,6 +66,10 @@ const budgetModel = mongoose.Schema(
           type: Date,
           required: true,
         },
+        brand: {
+          type: String,
+          required: true,
+        },
       },
     ],
     prospectStatus: {
@@ -70,6 +81,11 @@ const budgetModel = mongoose.Schema(
     paymentMethod: {
       type: Number,
       enum: Object.values(PaymentMethods),
+      required: true,
+    },
+    seller: {
+      type: Number,
+      enum: Object.values(Sellers),
       required: true,
     },
     stockReservations: [
@@ -90,8 +106,6 @@ const budgetModel = mongoose.Schema(
     timestamps: true,
   }
 );
-
-Object.freeze(ProspectStatus);
 
 budgetModel.plugin(AutoIncrement, { inc_field: "budgetId" });
 
