@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const {
   reserveStockForBudget,
   checkTotalAvailableStock,
+  getDraftBudgetsBySku,
 } = require("../services/inventoryService");
 
 async function checkStockAvailability(req, res) {
@@ -12,11 +13,13 @@ async function checkStockAvailability(req, res) {
   const { requiredQuantity } = req.query; // Cantidad requerida, pasada como parámetro de consulta
 
   try {
-    const isAvailable = await checkTotalAvailableStock(
+    const { isAvailable, availableStock } = await checkTotalAvailableStock(
       skuId,
-      Number(requiredQuantity)
+      Number(requiredQuantity),
+      true
     );
-    res.status(200).json({ available: isAvailable });
+    const budgetsId = await getDraftBudgetsBySku(skuId);
+    res.status(200).json({ available: isAvailable, availableStock, budgetsId });
   } catch (error) {
     res.status(500).json({
       message: "Error al verificar disponibilidad de stock",
@@ -100,6 +103,7 @@ async function getInfoAndPrice(req, res) {
           availableStock: 1,
           expiration: "$orderDetails.sku.expiration", // Fecha de expiración
           batch: "$orderDetails.sku.batch",
+          brand: "$orderDetails.sku.brand",
         },
       },
       { $limit: 1 }, // Solo la entrada más cercana
