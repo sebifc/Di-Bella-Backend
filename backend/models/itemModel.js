@@ -10,7 +10,7 @@ const itemSchema = mongoose.Schema(
     },
     user_name: {
       type: String,
-      required: true
+      required: true,
     },
     sku: {
       type: String,
@@ -33,13 +33,17 @@ const itemSchema = mongoose.Schema(
       required: [true, "Please add a presentation"],
       trim: true,
     },
+    itemSalePrice: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-itemSchema.plugin(AutoIncrement, { inc_field: 'itemId' });
+itemSchema.plugin(AutoIncrement, { inc_field: "itemId" });
 
 const Item = mongoose.model("Item", itemSchema);
 module.exports = Item;
