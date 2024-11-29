@@ -93,10 +93,46 @@ const updateItem = asyncHandler(async (req, res) => {
   res.status(200).json(updatedItem);
 });
 
+const saveSalePrice = asyncHandler(async (req, res) => {
+  const { items } = req.body;
+  if (!Array.isArray(items)) {
+    return res
+      .status(400)
+      .json({ message: "Invalid data format. Expected an array." });
+  }
+
+  const updates = items.map(async ([sku, salePrice]) => {
+    const updatedItem = await Item.findOneAndUpdate(
+      { sku },
+      { itemSalePrice: salePrice },
+      { new: true } // Devuelve el documento actualizado
+    );
+    return updatedItem;
+  });
+
+  try {
+    const results = await Promise.all(updates);
+    res
+      .status(200)
+      .json({
+        message: "Ya se cargaron los nuevos precios a los items",
+        results,
+      });
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        message: "Error al actualizar el precio de los items",
+        error: error.message,
+      });
+  }
+});
+
 module.exports = {
   createItem,
   getItems,
   getItem,
   deleteItem,
   updateItem,
+  saveSalePrice,
 };
