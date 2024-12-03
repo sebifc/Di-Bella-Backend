@@ -6,14 +6,18 @@ const {
   getBudget,
   getBudgets,
   deleteBudget,
-  updateBudget,
+  cancelBudget,
+  approveBudget,
+  approvedModificationsBudget,
 } = require("../controllers/budgetController");
 const { upload } = require("../utils/fileUpload");
 
 router.post("/", protect, upload.single("image"), createBudget);
-router.patch("/:id", upload.single("image"), updateBudget);
 router.get("/", getBudgets);
 router.get("/:id", protect, getBudget);
 router.delete("/:id", protect, deleteBudget);
+router.put("/cancel/:id", protect, cancelBudget);
+router.put("/approve/:id", protect, approveBudget);
+router.put("/approve-modifications/:id", protect, approvedModificationsBudget);
 
 module.exports = router;

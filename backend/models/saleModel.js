@@ -1,13 +1,6 @@
 const mongoose = require("mongoose");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 
-const ProspectStatus = Object.freeze({
-  Borrador: 0,
-  Rechazado: 1,
-  Aprobado: 2,
-  "Aprobado con Modificaciones": 3,
-});
-
 const PaymentMethods = Object.freeze({
   "Efectivo contra entrega": 0,
   "Transferencia contraentrega": 1,
@@ -23,7 +16,7 @@ const Sellers = Object.freeze({
   "VENDEDOR EXTERNO": 3,
 });
 
-const budgetModel = mongoose.Schema(
+const saleModel = mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -39,9 +32,26 @@ const budgetModel = mongoose.Schema(
       ref: "Client", // Referencia al modelo de Cliente
       required: true,
     },
-    budgetDate: {
+    saleDate: {
       type: Date,
       required: true,
+    },
+    paymentMethod: {
+      type: Number,
+      enum: Object.values(PaymentMethods),
+      required: true,
+    },
+    invoiceNumber: {
+      type: String,
+    },
+    deliveryTime: {
+      type: String,
+    },
+    deliveryPlace: {
+      type: String,
+    },
+    receivingDelivery: {
+      type: String,
     },
     items: [
       {
@@ -76,42 +86,18 @@ const budgetModel = mongoose.Schema(
         },
       },
     ],
-    prospectStatus: {
-      type: Number,
-      enum: Object.values(ProspectStatus),
-      default: ProspectStatus["Borrador"],
-      required: true,
-    },
-    paymentMethod: {
-      type: Number,
-      enum: Object.values(PaymentMethods),
-      required: true,
-    },
     seller: {
       type: Number,
       enum: Object.values(Sellers),
       required: true,
     },
-    stockReservations: [
-      {
-        stockId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Stock",
-          required: true,
-        },
-        reservedQuantity: {
-          type: Number,
-          required: true,
-        },
-      },
-    ],
   },
   {
     timestamps: true,
   }
 );
 
-budgetModel.plugin(AutoIncrement, { inc_field: "budgetId" });
+saleModel.plugin(AutoIncrement, { inc_field: "saleId" });
 
-const Budget = mongoose.model("Budget", budgetModel);
-module.exports = Budget;
+const Sale = mongoose.model("Sale", saleModel);
+module.exports = Sale;
