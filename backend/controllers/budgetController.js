@@ -12,25 +12,55 @@ const ProspectStatus = Object.freeze({
 });
 
 const createBudget = asyncHandler(async (req, res) => {
-  const { client, status, paymentMethod, seller, items } = req.body;
+  const {
+    client,
+    status,
+    paymentMethod,
+    seller,
+    items,
+    isUpdate = false,
+    id = null,
+  } = req.body;
 
   if (!client) {
     res.status(400);
     throw new Error("Please fill in all fields");
   }
 
-  const budget = await Budget.create({
-    user: req.user.id,
-    user_name: req.user.name,
+  const data = {
     client,
     budgetDate: moment().format("YYYY-MM-DD"),
     items,
     prospectStatus: status,
     paymentMethod,
     seller,
-  });
+  };
 
-  res.status(201).json(budget);
+  let result = null;
+
+  if (isUpdate) {
+    result = await Budget.findByIdAndUpdate(
+      id,
+      {
+        ...data,
+        stockReservations: [],
+        prospectStatus: ProspectStatus.AprobadoModificaciones,
+      },
+      {
+        new: true,
+      }
+    );
+
+    createSale(req, result);
+  } else {
+    result = await Budget.create({
+      user: req.user.id,
+      user_name: req.user.name,
+      ...data,
+    });
+  }
+
+  res.status(201).json(result);
 });
 
 const getBudgets = asyncHandler(async (req, res) => {
@@ -160,19 +190,29 @@ const approveBudget = asyncHandler(async (req, res) => {
     }
   );
 
-  const { client, paymentMethod, seller, items } = updatedBudget;
+  res.status(200).json(createSale(req, updatedBudget));
+});
 
-  const sale = await Sale.create({
-    user: req.user.id,
-    user_name: req.user.name,
-    client,
-    saleDate: moment().format("YYYY-MM-DD"),
-    paymentMethod,
-    items,
-    seller,
-  });
+const approvedModificationsBudget = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const budget = await Budget.findById(id);
 
-  res.status(200).json(sale);
+  if (!budget) {
+    res.status(404);
+    throw new Error("El presupuesto no fue encontrado");
+  }
+
+  if (budget.prospectStatus !== ProspectStatus.Borrador) {
+    res.status(400);
+    throw new Error(
+      "Solo se pueden aprobar presupuestos en estado Pendiente o Borrador"
+    );
+  }
+
+  // Desbloquea el stock reservado
+  unlockReservedStock(budget);
+
+  res.status(200).json(budget);
 });
 
 const unlockReservedStock = async (budget) => {
@@ -191,6 +231,20 @@ const unlockReservedStock = async (budget) => {
   }
 };
 
+const createSale = async (req, budget) => {
+  const { client, paymentMethod, seller, items } = budget;
+
+  return (sale = await Sale.create({
+    user: req.user.id,
+    user_name: req.user.name,
+    client,
+    saleDate: moment().format("YYYY-MM-DD"),
+    paymentMethod,
+    items,
+    seller,
+  }));
+};
+
 module.exports = {
   createBudget,
   getBudgets,
@@ -198,4 +252,5 @@ module.exports = {
   deleteBudget,
   cancelBudget,
   approveBudget,
+  approvedModificationsBudget,
 };
