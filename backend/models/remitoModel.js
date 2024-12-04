@@ -9,14 +9,7 @@ const PaymentMethods = Object.freeze({
   "Cheque a 60 dias": 4,
 });
 
-const Sellers = Object.freeze({
-  "DIANA COCH": 0,
-  "FERNANDO PAZZANO": 1,
-  "LUCILA DI BELLA": 2,
-  "VENDEDOR EXTERNO": 3,
-});
-
-const saleModel = mongoose.Schema(
+const remitoModel = mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -32,26 +25,23 @@ const saleModel = mongoose.Schema(
       ref: "Client", // Referencia al modelo de Cliente
       required: true,
     },
-    saleDate: {
-      type: Date,
-      required: true,
-    },
     paymentMethod: {
       type: Number,
       enum: Object.values(PaymentMethods),
       required: true,
     },
-    invoiceNumber: {
-      type: String,
+    sale: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Sale", // Referencia a la venta original
+      required: true,
     },
-    deliveryTime: {
-      type: String,
+    remitoDate: {
+      type: Date,
+      required: true,
     },
-    deliveryPlace: {
-      type: String,
-    },
-    receivingDelivery: {
-      type: String,
+    timeRange: {
+      type: String, // Campo adicional para el rango horario
+      required: true,
     },
     items: [
       {
@@ -60,21 +50,8 @@ const saleModel = mongoose.Schema(
           ref: "Item", // Referencia al modelo SKU
           required: true,
         },
-        itemPurchasePrice: {
-          type: Number, // Precio de compra (desde el modelo Order)
-          required: true,
-        },
-        itemSalePrice: {
-          type: Number, // Precio de venta
-          required: true,
-        },
         quantity: {
-          type: Number, // Cantidad de SKU
-          required: true,
-        },
-        deliveredQuantity: { type: Number, default: 0 },
-        expiration: {
-          type: Date,
+          type: Number, // Cantidad de SKU en el remito
           required: true,
         },
         brand: {
@@ -85,13 +62,12 @@ const saleModel = mongoose.Schema(
           type: String,
           required: true,
         },
+        expiration: {
+          type: Date,
+          required: true,
+        },
       },
     ],
-    seller: {
-      type: Number,
-      enum: Object.values(Sellers),
-      required: true,
-    },
     status: {
       type: Number,
       default: 0,
@@ -102,7 +78,7 @@ const saleModel = mongoose.Schema(
   }
 );
 
-saleModel.plugin(AutoIncrement, { inc_field: "saleId" });
+remitoModel.plugin(AutoIncrement, { inc_field: "remitoId" });
 
-const Sale = mongoose.model("Sale", saleModel);
-module.exports = Sale;
+const Remito = mongoose.model("Remito", remitoModel);
+module.exports = Remito;
