@@ -46,6 +46,7 @@ const updateSale = asyncHandler(async (req, res) => {
       deliveryPlace,
       receivingDelivery,
       updatedAt: updtAt,
+      status: sale.status === 2 ? 2 : 1,
     },
     {
       new: true,
@@ -125,6 +126,14 @@ const createRemito = asyncHandler(async (req, res) => {
       saleItem.deliveredQuantity += item.quantity;
     }
   }
+
+  // Verificar si aún hay ítems pendientes después de actualizar las cantidades remitidas
+  const remainingPendingItems = sale.items.some(
+    (item) => item.quantity > item.deliveredQuantity
+  );
+
+  // Actualizar el estado de la venta: 2 si no faltan ítems, de lo contrario se mantiene igual
+  sale.status = remainingPendingItems ? sale.status : 2;
 
   // Guardar los cambios en la venta
   await sale.save();
