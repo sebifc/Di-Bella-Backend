@@ -17,7 +17,7 @@ const PaymentMethods = Object.freeze({
 });
 
 const Sellers = Object.freeze({
-  "DIANA COCH": 0,
+  "CONSTANZA CONTENTI": 0,
   "FERNANDO PAZZANO": 1,
   "LUCILA DI BELLA": 2,
   "VENDEDOR EXTERNO": 3,
