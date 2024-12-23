@@ -8,6 +8,7 @@ const {
   deleteItem,
   updateItem,
   saveSalePrice,
+  getItemsValued,
 } = require("../controllers/itemController");
 const { upload } = require("../utils/fileUpload");
 
@@ -17,5 +18,6 @@ router.get("/", getItems);
 router.get("/:id", protect, getItem);
 router.delete("/:id", protect, deleteItem);
 router.post("/save-sale-price", protect, saveSalePrice);
+router.get("/valued/price", getItemsValued);
 
 module.exports = router;

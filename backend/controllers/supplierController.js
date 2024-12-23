@@ -16,6 +16,8 @@ const createSupplier = asyncHandler(async (req, res) => {
     type,
     code,
     description,
+    cbu,
+    alias,
   } = req.body;
 
   // Validation
@@ -39,6 +41,8 @@ const createSupplier = asyncHandler(async (req, res) => {
     type,
     code,
     description,
+    cbu,
+    alias,
   });
 
   res.status(201).json(supplier);
@@ -93,6 +97,8 @@ const updateSupplier = asyncHandler(async (req, res) => {
     type,
     code,
     description,
+    cbu,
+    alias,
   } = req.body;
   const { id } = req.params;
 
@@ -120,6 +126,8 @@ const updateSupplier = asyncHandler(async (req, res) => {
       type,
       code,
       description,
+      cbu,
+      alias,
       updatedAt: updtAt,
     },
     {

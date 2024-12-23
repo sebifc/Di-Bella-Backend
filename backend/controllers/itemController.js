@@ -101,30 +101,69 @@ const saveSalePrice = asyncHandler(async (req, res) => {
       .json({ message: "Invalid data format. Expected an array." });
   }
 
-  const updates = items.map(async ([sku, salePrice]) => {
-    const updatedItem = await Item.findOneAndUpdate(
-      { sku },
-      { itemSalePrice: salePrice },
-      { new: true } // Devuelve el documento actualizado
-    );
-    return updatedItem;
+  const updates = await items.map(async ([sku, brand, salePrice]) => {
+    try {
+      const item = await Item.findOne({ sku });
+
+      if (!item) {
+        return { error: `Item with sku ${sku} not found.` };
+      }
+
+      const priceIndex = item.itemSalePrices.findIndex(
+        (p) => p.brand === brand
+      );
+
+      if (priceIndex !== -1) {
+        // Actualizar precio existente
+        item.itemSalePrices[priceIndex].price = salePrice;
+      } else {
+        // Agregar nuevo precio para la marca
+        item.itemSalePrices.push({ brand, price: salePrice });
+      }
+
+      await item.save();
+      return item;
+    } catch (error) {
+      return { error: error.message };
+    }
   });
 
   try {
     const results = await Promise.all(updates);
-    res
-      .status(200)
-      .json({
-        message: "Ya se cargaron los nuevos precios a los items",
-        results,
-      });
+    res.status(200).json({
+      message: "Ya se cargaron los nuevos precios a los items",
+      results,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al actualizar el precio de los items",
+      error: error.message,
+    });
+  }
+});
+
+const getItemsValued = asyncHandler(async (req, res) => {
+  try {
+    // Consultar todos los items
+    const items = await Item.find();
+
+    // Transformar los datos para incluir cada combinación de marca y precio en una fila
+    const result = items.flatMap((item) =>
+      item.itemSalePrices.map((price) => ({
+        sku: item.sku,
+        category: item.category,
+        description: item.description,
+        presentation: item.presentation,
+        brand: price.brand,
+        price: price.price,
+      }))
+    );
+
+    res.status(200).json(result);
   } catch (error) {
     res
       .status(500)
-      .json({
-        message: "Error al actualizar el precio de los items",
-        error: error.message,
-      });
+      .json({ message: "Error fetching items.", error: error.message });
   }
 });
 
@@ -135,4 +174,5 @@ module.exports = {
   deleteItem,
   updateItem,
   saveSalePrice,
+  getItemsValued,
 };

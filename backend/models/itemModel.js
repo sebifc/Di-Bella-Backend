@@ -25,7 +25,6 @@ const itemSchema = mongoose.Schema(
     },
     description: {
       type: String,
-      required: [true, "Please add a description"],
       trim: true,
     },
     presentation: {
@@ -33,10 +32,12 @@ const itemSchema = mongoose.Schema(
       required: [true, "Please add a presentation"],
       trim: true,
     },
-    itemSalePrice: {
-      type: Number,
-      default: 0,
-    },
+    itemSalePrices: [
+      {
+        brand: { type: String, required: true },
+        price: { type: Number, required: true },
+      },
+    ],
   },
   {
     timestamps: true,
