@@ -57,6 +57,14 @@ const supplierSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
+    cbu: { 
+      type: Number,
+      trim: true,
+    },
+    alias: {
+      type: String,
+      trim: true,
+    },
   },
   {
     timestamps: true,
